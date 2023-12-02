@@ -15,26 +15,26 @@ class PostRepository implements OrderRepositoryInterface
 
     public function getPostById($postId)
     {
-        // TODO: Implement getPostById() method.
+        return Post::findOrFail($postId);
     }
 
     public function deletePost($postId)
     {
-        // TODO: Implement deletePost() method.
+        Post::destroy($postId);
     }
 
     public function createPost(array $postDetails)
     {
-        // TODO: Implement createPost() method.
+        return Post::create($postDetails);
     }
 
     public function updatePost($postId, array $newDetails)
     {
-        // TODO: Implement updatePost() method.
+        return Post::whereId($postId)->update($newDetails);
     }
 
     public function getFulfilledPosts()
     {
-        // TODO: Implement getFulfilledPosts() method.
+        return Post::where('is_fulfilled', true);
     }
 }
