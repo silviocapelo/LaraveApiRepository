@@ -2,65 +2,70 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
-use App\Http\Requests\StorePostRequest;
-use App\Http\Requests\UpdatePostRequest;
+use App\Interfaces\PostRepositoryInterface;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected PostRepositoryInterface $postRepository;
+
+    public function __construct(PostRepositoryInterface $postRepository)
     {
-        //
+        $this->postRepository = $postRepository;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function index(): JsonResponse
     {
-        //
+        return response()->json([
+                'data' => $this->postRepository->getAllPosts()
+            ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorePostRequest $request)
+    public function store(Request $request): JsonResponse
     {
-        //
+        $postDetails = $request->only([
+            'author',
+            'details'
+        ]);
+
+        return response()->json(
+            [
+                'data' => $this->postRepository->createPost($postDetails)
+            ],
+            ResponseAlias::HTTP_CREATED
+        );
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Post $post)
+    public function show(Request $request): JsonResponse
     {
-        //
+        $postId = $request->route('id');
+
+        return response()->json([
+            'data' => $this->postRepository->getPostById($postId)
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Post $post)
+    public function update(Request $request): JsonResponse
     {
-        //
+        $postId = $request->route('id');
+        $postDetails = $request->only([
+            'client',
+            'details'
+        ]);
+
+        return response()->json([
+            'data' => $this->postRepository->updatePost($postId, $postDetails)
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatePostRequest $request, Post $post)
+    public function destroy(Request $request): JsonResponse
     {
-        //
-    }
+        $postId = $request->route('id');
+        $this->postRepository->deletePost($postId);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Post $post)
-    {
-        //
+        return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Interfaces;
 
-interface OrderRepositoryInterface
+interface PostRepositoryInterface
 {
     public function getAllPosts();
     public function getPostById($postId);
